@@ -21,7 +21,7 @@ export const PeerConnection = {
     getPeer: () => peer,
     startPeerSession: () => new Promise<string>((resolve, reject) => {
         try {
-            peer = new Peer({
+            peer = new Peer(undefined, {
                 config: {
                     iceServers: [
                         { urls: 'stun:stun.l.google.com:19302' }
