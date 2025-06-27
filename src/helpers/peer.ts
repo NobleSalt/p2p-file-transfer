@@ -1,5 +1,5 @@
-import Peer, {DataConnection, PeerErrorType, PeerError} from "peerjs";
-import {message} from "antd";
+import Peer, { DataConnection, PeerErrorType, PeerError } from "peerjs";
+import { message } from "antd";
 
 export enum DataType {
     FILE = 'FILE',
@@ -21,7 +21,13 @@ export const PeerConnection = {
     getPeer: () => peer,
     startPeerSession: () => new Promise<string>((resolve, reject) => {
         try {
-            peer = new Peer()
+            peer = new Peer({
+                config: {
+                    iceServers: [
+                        { urls: 'stun:stun.l.google.com:19302' }
+                    ]
+                }
+            })
             peer.on('open', (id) => {
                 console.log('My ID: ' + id)
                 resolve(id)
@@ -56,16 +62,16 @@ export const PeerConnection = {
             return
         }
         try {
-            let conn = peer.connect(id, {reliable: true})
+            let conn = peer.connect(id, { reliable: true })
             if (!conn) {
                 reject(new Error("Connection can't be established"))
             } else {
-                conn.on('open', function() {
+                conn.on('open', function () {
                     console.log("Connect to: " + id)
                     connectionMap.set(id, conn)
                     peer?.removeListener('error', handlePeerError)
                     resolve()
-                }).on('error', function(err) {
+                }).on('error', function (err) {
                     console.log(err)
                     peer?.removeListener('error', handlePeerError)
                     reject(err)
